@@ -1,68 +1,48 @@
-import { v4 } from 'uuid'
-
-let tasks = [
-  {
-    id: v4(),
-    title: 'Estudar lógica de programação',
-    isCompleted: false,
-  },
-  {
-    id: v4(),
-    title: 'Treinar',
-    isCompleted: false,
-  },
-  {
-    id: v4(),
-    title: 'Estudar inglês',
-    isCompleted: false,
-  },
-]
+import { query } from '../../database'
 
 class TasksRepository {
-  findAll() {
-    return new Promise((resolve) => {
-      resolve(tasks)
-    })
+  async findAll() {
+    const rows = await query('SELECT * FROM todo')
+    return rows
   }
 
-  findById(id: string) {
-    return new Promise((resolve) => {
-      resolve(tasks.find((task) => task.id === id))
-    })
+  async findById(id: string) {
+    const [row] = await query('SELECT * FROM todo WHERE id = $1', [id])
+
+    return row
   }
 
-  create(title: string, isCompleted: boolean) {
-    return new Promise((resolve) => {
-      const newTask = {
-        id: v4(),
-        title,
-        isCompleted,
-      }
+  async create(title: string, isCompleted: boolean) {
+    const [row] = await query(
+      `
+      INSERT INTO todo(title, isCompleted)
+      VALUES($1, $2)
+      RETURNING *
+    `,
+      [title, isCompleted],
+    )
 
-      tasks.push(newTask)
-      resolve(newTask)
-    })
+    return row
   }
 
-  update(id: string, title: string, isCompleted: boolean) {
-    return new Promise((resolve) => {
-      const updatedTask = {
-        id,
-        title,
-        isCompleted,
-      }
+  async update(id: string, title: string, isCompleted: boolean) {
+    const [row] = await query(
+      `
+      UPDATE todo
+      SET title = $1, isCompleted = $2
+      WHERE id = $3
+      RETURNING *
+    `,
+      [title, isCompleted, id],
+    )
 
-      tasks = tasks.map((task) => (task.id === id ? updatedTask : task))
-
-      resolve(updatedTask)
-    })
+    return row
   }
 
-  delete(id: string) {
-    return new Promise((resolve) => {
-      tasks = tasks.filter((task) => task.id !== id)
-      resolve(tasks)
-    })
+  async delete(id: string) {
+    const deleteOp = await query('DELETE FROM todo WHERE id = $1', [id])
+
+    return deleteOp
   }
 }
 

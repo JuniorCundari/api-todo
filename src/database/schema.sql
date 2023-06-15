@@ -1,0 +1,20 @@
+CREATE DATABASE todos;
+
+CREATE EXTENSION IF NOOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS users (
+  id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  githubId INTEGER NOT NULL UNIQUE,
+  name VARCHAR NOT NULL,
+  avatarUrl VARCHAR NOT NULL,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS todo (
+  id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  title VARCHAR NOT NULL,
+  isCompleted BOOLEAN,
+  users_id UUID,
+  FOREIGN KEY(users_id) REFERENCES users(id),
+  PRIMARY KEY(id)
+);

@@ -6,11 +6,12 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
     "pg": "^8.11.0",
     "uuid": "^9.0.0"
   },
   "scripts": {
-    "dev": "npx nodemon src/index.ts --watch 'src/' -e ts",
+    "dev": "npx nodemon --exec ts-node --files src/index.ts",
     "dist": "npx tsc",
     "start": "node ./dist/index.js",
     "lint": "eslint src --ext .ts --fix"
@@ -19,6 +20,7 @@
     "@rocketseat/eslint-config": "^1.2.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/pg": "^8.10.2",
     "@types/uuid": "^9.0.2",
     "dotenv": "^16.1.4",

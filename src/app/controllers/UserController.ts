@@ -3,6 +3,10 @@ import { Request, Response } from 'express'
 import UsersRepository from '../repositories/UsersRepository'
 
 class UserController {
+  async index(request: Request, response: Response) {
+    return response.send({ userID: request.userId })
+  }
+
   async store(request: Request, response: Response) {
     const { name, email, password } = request.body
 

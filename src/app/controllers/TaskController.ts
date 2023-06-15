@@ -63,4 +63,4 @@ class TaskController {
   }
 }
 
-export = new TaskController()
+export default new TaskController()

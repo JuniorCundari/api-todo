@@ -3,6 +3,7 @@ import { query } from '../../database'
 class TasksRepository {
   async findAll() {
     const rows = await query('SELECT * FROM todo')
+
     return rows
   }
 
@@ -46,4 +47,4 @@ class TasksRepository {
   }
 }
 
-export = new TasksRepository()
+export default new TasksRepository()

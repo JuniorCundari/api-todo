@@ -1,8 +1,8 @@
 import { query } from '../../database'
 
 class TasksRepository {
-  async findAll() {
-    const rows = await query('SELECT * FROM todo')
+  async findAll(id: string) {
+    const rows = await query('SELECT * FROM todo WHERE users_id = $1', [id])
 
     return rows
   }
@@ -13,20 +13,20 @@ class TasksRepository {
     return row
   }
 
-  async create(title: string, isCompleted: boolean) {
+  async create(title: string, isCompleted: boolean, userId: string) {
     const [row] = await query(
       `
-      INSERT INTO todo(title, isCompleted)
-      VALUES($1, $2)
+      INSERT INTO todo(title, isCompleted, users_id)
+      VALUES($1, $2, $3)
       RETURNING *
     `,
-      [title, isCompleted],
+      [title, isCompleted, userId],
     )
 
     return row
   }
 
-  async update(id: string, title: string, isCompleted: boolean) {
+  async update(title: string, isCompleted: boolean, id: string) {
     const [row] = await query(
       `
       UPDATE todo

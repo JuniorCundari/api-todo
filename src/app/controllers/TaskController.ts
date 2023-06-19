@@ -1,35 +1,40 @@
 import { Response, Request } from 'express'
 
 import TasksRepository from '../repositories/TasksRepository'
+import { BadRequestError, NotFoundError } from '../helpers/apiError'
+import { Task } from '../../models/Task'
 
 class TaskController {
   async index(request: Request, response: Response) {
-    const tasks = await TasksRepository.findAll()
+    const { user } = request
 
-    response.json(tasks)
+    const tasks: Task[] = await TasksRepository.findAll(user.id)
+
+    response.status(200).json(tasks)
   }
 
   async show(request: Request, response: Response) {
     const { id } = request.params
-    const task = await TasksRepository.findById(id)
+    const task: Task = await TasksRepository.findById(id)
 
     if (!task) {
-      return response.status(404).json({ error: 'Task not found' })
+      throw new NotFoundError('Task not found')
     }
 
-    response.json(task)
+    return response.status(200).json(task)
   }
 
   async store(request: Request, response: Response) {
+    const { user } = request
     const { title, isCompleted } = request.body
 
     if (!title) {
-      return response.status(400).json({ error: 'Title is required' })
+      throw new BadRequestError('Title is required')
     }
 
-    const task = await TasksRepository.create(title, isCompleted)
+    const task: Task = await TasksRepository.create(title, isCompleted, user.id)
 
-    response.json(task)
+    return response.status(201).json(task)
   }
 
   async update(request: Request, response: Response) {
@@ -38,24 +43,25 @@ class TaskController {
 
     const taskExists = await TasksRepository.findById(id)
     if (!taskExists) {
-      return response.status(404).json({ error: 'Task not found' })
+      throw new NotFoundError('Task not found')
     }
 
     if (!title) {
-      return response.status(400).json({ error: 'Title is required' })
+      throw new BadRequestError('Title is required')
     }
 
-    const task = await TasksRepository.update(id, title, isCompleted)
+    const task: Task = await TasksRepository.update(title, isCompleted, id)
 
-    response.json(task)
+    response.status(200).json(task)
   }
 
   async delete(request: Request, response: Response) {
     const { id } = request.params
-    const task = await TasksRepository.findById(id)
+
+    const task: Task = await TasksRepository.findById(id)
 
     if (!task) {
-      return response.status(404).json({ error: 'Task not found' })
+      throw new NotFoundError('Task not found')
     }
 
     await TasksRepository.delete(id)

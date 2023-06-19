@@ -4,18 +4,24 @@ import authMiddlewares from './app/middlewares/authMiddlewares'
 
 import UserController from './app/controllers/UserController'
 import TaskController from './app/controllers/TaskController'
-import AuthController from './app/controllers/AuthController'
+import LoginController from './app/controllers/LoginController'
 
 const router = Router()
 
-router.post('/users', UserController.store)
-router.post('/auth', AuthController.authenticate)
-router.get('/users', authMiddlewares, UserController.index)
+router.post('/login', LoginController.authenticate)
+router.post('/register', UserController.store)
+
+router.use(authMiddlewares)
+
+router.get('/users', UserController.index)
+router.get('/user', UserController.show)
+router.put('/user', UserController.update)
+router.delete('/user', UserController.delete)
 
 router.get('/tasks', TaskController.index)
-router.get('/tasks/:id', TaskController.show)
-router.post('/tasks', TaskController.store)
-router.put('/tasks/:id', TaskController.update)
-router.delete('/tasks/:id', TaskController.delete)
+router.get('/task/:id', TaskController.show)
+router.post('/task', TaskController.store)
+router.put('/task/:id', TaskController.update)
+router.delete('/task/:id', TaskController.delete)
 
 export default router

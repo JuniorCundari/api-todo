@@ -1,15 +1,20 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 
-const TOKEN_KEY = process.env.TOKEN_KEY
+import { UnauthorizedError } from '../helpers/apiError'
 
-interface TokenPayLoadProps {
+import UsersRepository from '../repositories/UsersRepository'
+import { User } from '../../models/User'
+
+const TOKEN_KEY = process.env.TOKEN_KEY || ''
+
+interface TokenPayLoad {
   id: string
   iat: number
   exp: number
 }
 
-export default function authMiddlewares(
+async function authMiddlewares(
   request: Request,
   response: Response,
   next: NextFunction,
@@ -17,20 +22,27 @@ export default function authMiddlewares(
   const { authorization } = request.headers
 
   if (!authorization) {
-    return response.sendStatus(401)
+    throw new UnauthorizedError('Not authorized')
   }
 
   const token = authorization.replace('Bearer', '').trim()
 
   try {
-    const data = jwt.verify(token, `${TOKEN_KEY}`)
+    const data = jwt.verify(token, TOKEN_KEY)
+    const { id } = data as TokenPayLoad
 
-    const { id } = data as TokenPayLoadProps
+    const user: User[] = await UsersRepository.findById(id)
 
-    request.userId = id
+    if (!user) {
+      throw new UnauthorizedError('Not authorized')
+    }
+
+    request.user = user
 
     return next()
   } catch {
-    return response.sendStatus(401)
+    throw new UnauthorizedError('Invalid token')
   }
 }
+
+export default authMiddlewares

@@ -4,33 +4,35 @@ import jwt from 'jsonwebtoken'
 
 import UsersRepository from '../repositories/UsersRepository'
 
-const TOKEN_KEY = process.env.TOKEN_KEY
+import { BadRequestError } from '../helpers/apiError'
 
-class AuthController {
+const TOKEN_KEY = process.env.TOKEN_KEY ?? ''
+
+class LoginController {
   async authenticate(request: Request, response: Response) {
     const { email, password } = request.body
 
     const user = await UsersRepository.findByEmail(email)
 
     if (!user) {
-      return response.sendStatus(401)
+      throw new BadRequestError('E-mail or password invalid')
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (!isValidPassword) {
-      return response.sendStatus(401)
+      throw new BadRequestError('E-mail or password invalid')
     }
 
-    const token = jwt.sign({ id: user.id }, `${TOKEN_KEY}`, { expiresIn: '1d' })
+    const token = jwt.sign({ id: user.id }, TOKEN_KEY, { expiresIn: '1d' })
 
-    delete user.password
+    const { password: _, ...userLogin } = user
 
     return response.json({
-      user,
+      userLogin,
       token,
     })
   }
 }
 
-export default new AuthController()
+export default new LoginController()

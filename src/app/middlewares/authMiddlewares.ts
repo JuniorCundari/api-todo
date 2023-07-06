@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { UnauthorizedError } from '../helpers/apiError'
 
 import UsersRepository from '../repositories/UsersRepository'
+
 import { User } from '../../models/User'
 
 const TOKEN_KEY = process.env.TOKEN_KEY || ''

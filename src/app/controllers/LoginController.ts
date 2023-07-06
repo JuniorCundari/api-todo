@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 
 import UsersRepository from '../repositories/UsersRepository'
 
-import { BadRequestError } from '../helpers/apiError'
+import { UnauthorizedError } from '../helpers/apiError'
 
 const TOKEN_KEY = process.env.TOKEN_KEY ?? ''
 
@@ -15,13 +15,13 @@ class LoginController {
     const user = await UsersRepository.findByEmail(email)
 
     if (!user) {
-      throw new BadRequestError('E-mail or password invalid')
+      throw new UnauthorizedError('E-mail or password invalid')
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (!isValidPassword) {
-      throw new BadRequestError('E-mail or password invalid')
+      throw new UnauthorizedError('E-mail or password invalid')
     }
 
     const token = jwt.sign({ id: user.id }, TOKEN_KEY, { expiresIn: '1d' })

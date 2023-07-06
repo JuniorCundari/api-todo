@@ -26,6 +26,10 @@ class UserController {
   async store(request: Request, response: Response) {
     const { name, email, password } = request.body as User
 
+    if (!name || !email || !password) {
+      throw new BadRequestError('Fill in the fields correctly')
+    }
+
     const userExists: User = await UsersRepository.findByEmail(email)
 
     if (userExists) {

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS todo (
   id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
   title VARCHAR NOT NULL,
-  isCompleted BOOLEAN,
+  completed BOOLEAN,
   users_id UUID,
   FOREIGN KEY(users_id) REFERENCES users(id),
   PRIMARY KEY(id)

@@ -13,28 +13,28 @@ class TasksRepository {
     return row
   }
 
-  async create(title: string, isCompleted: boolean, userId: string) {
+  async create(title: string, completed: boolean, userId: string) {
     const [row] = await query(
       `
-      INSERT INTO todo(title, isCompleted, users_id)
+      INSERT INTO todo(title, completed, users_id)
       VALUES($1, $2, $3)
       RETURNING *
     `,
-      [title, isCompleted, userId],
+      [title, completed, userId],
     )
 
     return row
   }
 
-  async update(title: string, isCompleted: boolean, id: string) {
+  async update(title: string, completed: boolean, id: string) {
     const [row] = await query(
       `
       UPDATE todo
-      SET title = $1, isCompleted = $2
+      SET title = $1, completed = $2
       WHERE id = $3
       RETURNING *
     `,
-      [title, isCompleted, id],
+      [title, completed, id],
     )
 
     return row

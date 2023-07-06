@@ -26,20 +26,20 @@ class TaskController {
 
   async store(request: Request, response: Response) {
     const { user } = request
-    const { title, isCompleted } = request.body
+    const { title, completed } = request.body
 
     if (!title) {
       throw new BadRequestError('Title is required')
     }
 
-    const task: Task = await TasksRepository.create(title, isCompleted, user.id)
+    const task: Task = await TasksRepository.create(title, completed, user.id)
 
     return response.status(201).json(task)
   }
 
   async update(request: Request, response: Response) {
     const { id } = request.params
-    const { title, isCompleted } = request.body
+    const { title, completed } = request.body
 
     const taskExists = await TasksRepository.findById(id)
     if (!taskExists) {
@@ -50,7 +50,7 @@ class TaskController {
       throw new BadRequestError('Title is required')
     }
 
-    const task: Task = await TasksRepository.update(title, isCompleted, id)
+    const task: Task = await TasksRepository.update(title, completed, id)
 
     response.status(200).json(task)
   }
